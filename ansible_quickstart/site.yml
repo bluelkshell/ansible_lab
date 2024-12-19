@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Install updates for Rocky
+    ansible.builtin.dnf:
+      update_only: true
+      update_cache: true
+    when: ansible_distribution == "Rocky"
+
+  - name: Install updates for Ubuntu
+    ansible.builtin.apt:
+      upgrade: dist
+      update_cache: true
+    when: ansible_distribution == "Ubuntu"
+
+
+- hosts: web_servers
+  become: true
+  tasks:
+
+    - name: Install apache on web servers
+      ansible.builtin.apt:
+        name: 
+          - apache2
+          - libapache2-mod-php
+      when: ansible_distribution == "Ubuntu"
+
+- hosts: db_servers
+  become: true
+  tasks:
+    - name: Install mariadb package on db servers
+      ansible.builtin.dnf:
+        name: mariadb
+        state: latest
+      when: ansible_distribution == "Rocky"
+
+      
